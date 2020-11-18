@@ -1,0 +1,23 @@
+{
+  "name": "top5000songs",
+  "version": "1.0.0",
+  "description": "Node CLI to query topsongs",
+  "main": "topsongs.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johndexteriv/top5000songs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/johndexteriv/top5000songs/issues"
+  },
+  "homepage": "https://github.com/johndexteriv/top5000songs#readme",
+  "dependencies": {
+    "inquirer": "^7.3.3",
+    "mysql": "^2.18.1"
+  }
+}
