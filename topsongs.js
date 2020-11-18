@@ -45,13 +45,43 @@ const promptOptions = async () => {
 			) {
 				specificSong();
 			} else if (answer.queryoption == "Exit") {
-				console("Thank you for using Top 500!");
+				console.log("Thank you for using Top 500!");
 				connection.end();
 			}
 		});
 };
 
-//  A query which returns all data for songs sung by a specific artist
+const artist = () => {
+	const answer = inquirer
+		.prompt([
+			{
+				type: "input",
+				name: "artistname",
+				message: "What arists songs would you like to query?",
+			},
+		])
+		.then((answer) => {
+			var query = "SELECT position, song, year FROM top5000 WHERE ?";
+			connection.query(query, { artist: answer.artistname }, function (
+				err,
+				res
+			) {
+				if (err) throw err;
+				console.table(res);
+			});
+			promptOptions();
+		});
+};
+
+const moreThanOnce = () => {
+	var query = "SELECT artist FROM top5000 GROUP BY artist HAVING COUNT(*) > 1";
+	connection.query(query, function (err, res) {
+		if (err) throw err;
+		console.table(res);
+		// res.map((record) => console.log(`Artist: ${record.artist}`));
+		promptOptions();
+	});
+};
 
 //   A query which returns all artists who appear within the top 5000 more than once
 
