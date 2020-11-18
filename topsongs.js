@@ -1,3 +1,4 @@
+const { resolveCname } = require("dns");
 var inquirer = require("inquirer");
 var mysql = require("mysql");
 const { connect } = require("tls");
@@ -56,23 +57,6 @@ const promptOptions = () => {
 					break;
 			}
 		});
-	// .then((answer) => {
-	// 	if (answer.queryoption == "Query all songs by a particular artist") {
-	// 		artist();
-	// 	} else if (
-	// 		answer.queryoption ==
-	// 		"Query all artists which appear in the top 5000 more than once"
-	// 	) {
-	// 		moreThanOnce();
-	// 	} else if (
-	// 		answer.queryoption == "Query the information for a specific song"
-	// 	) {
-	// 		specificSong();
-	// 	} else if (answer.queryoption == "Exit") {
-	// 		console.log("Thank you for using Top 500!");
-	// 		connection.end();
-	// 	}
-	// });
 };
 
 const artist = () => {
@@ -107,8 +91,76 @@ const moreThanOnce = () => {
 	});
 };
 
-//   A query which returns all artists who appear within the top 5000 more than once
+const rangeSearch = () => {
+	inquirer
+		.prompt([
+			{
+				name: "start",
+				type: "input",
+				message: "Enter starting postion: ",
+				validate: (value) => {
+					if (isNaN(value) === false) {
+						return true;
+					}
+					return false;
+				},
+			},
+			{
+				name: "end",
+				type: "input",
+				message: "Enter ending position: ",
+				validate: (value) => {
+					if (isNaN(value) === false) {
+						return true;
+					}
+					return false;
+				},
+			},
+		])
+		.then((answer) => {
+			const query =
+				"SELECT position,song,artist,year FROM top5000 WHERE position BETWEEN ? AND ?";
+			connection.query(query, [answer.start, answer.end], function (err, res) {
+				if (err) throw err;
+				res.map((record) =>
+					console.log(
+						`Positon: ${record.position} || Song: ${record.song} || Artist: ${record.artist} || Year: ${record.year}`
+					)
+				);
+				// Other option to build tabled res
+				// console.table(res);
+				promptOptions();
+			});
+		});
+};
 
-//   A query which returns all data contained within a specific range
+const specificSong = () => {
+	inquirer
+		.prompt({
+			name: "song",
+			type: "input",
+			message: "What song would you like to query?",
+		})
+		.then((answer) => {
+			connection.query(
+				"SELECT * FROM top5000 WHERE ?",
+				{ song: answer.song },
+				function (err, res) {
+					if (err) throw err;
+					console.log(
+						"Position: " +
+							res[0].position +
+							" || Song: " +
+							res[0].song +
+							" || Artist: " +
+							res[0].artist +
+							" || Year: " +
+							res[0].year
+					);
+				}
+			);
+			promptOptions();
+		});
+};
 
 //  A query which searches for a specific song in the top 5000 and returns the data for it
